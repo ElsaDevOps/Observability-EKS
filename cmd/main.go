@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"github.com/prometheus/client_golang/prometheus"
     "github.com/prometheus/client_golang/prometheus/promhttp"
+	
 )
 
 type metrics struct {
@@ -30,8 +31,6 @@ func NewMetrics( reg prometheus.Registerer) *metrics {
 }
 
 
-
-
 func main() {
 	reg := prometheus.NewRegistry()
 	m := NewMetrics(reg)
@@ -41,3 +40,6 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
+
+
+
