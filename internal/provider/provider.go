@@ -1,13 +1,18 @@
 package provider
 
+import (
+	"context"
+	"time"
+)
+
 type Node struct {
-    ID      string
-    Name    string
-    Healthy bool
+	ID      string
+	Name    string
+	Healthy bool
 }
 
 type Provider interface {
-    Name() string
-    CheckAPI(ctx context.Context) (healthy bool, latency time.Duration, err error)
-    ListNodes(ctx context.Context) ([]Node, error)
+	Name() string
+	CheckAPI(ctx context.Context) (healthy bool, latency time.Duration, err error)
+	ListNodes(ctx context.Context) ([]Node, error)
 }
