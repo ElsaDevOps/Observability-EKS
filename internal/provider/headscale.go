@@ -31,8 +31,7 @@ func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 	}
 	defer resp.Body.Close()
 
-	t := time.Now()
-	elapsed := t.Sub(start)
+	elapsed := time.Since(start)
 	fmt.Println("Response status:", resp.Status)
 
 	return resp.StatusCode == 200, elapsed, nil
