@@ -12,6 +12,14 @@ type Headscale struct {
 	apikey string
 }
 
+func (h *Headscale) ListNodes(ctx context.Context) ([]Node, error) {
+	return nil, nil
+}
+
+func (h *Headscale) Name() string {
+	return "headscale"
+}
+
 func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 
 	req, err := http.NewRequestWithContext(ctx, "GET", h.url, nil)
@@ -41,3 +49,4 @@ func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 func NewHeadscale(url, apikey string) *Headscale {
 	return &Headscale{url: url, apikey: apikey}
 }
+
