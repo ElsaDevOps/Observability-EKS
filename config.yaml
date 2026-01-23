@@ -1,0 +1,9 @@
+providers:
+  - name: headscale
+    url: http://localhost:8080
+    api_key: test-key
+  - name: tailscale
+    url: https://api.tailscale.com
+    api_key: test-key
+
+interval: 30s

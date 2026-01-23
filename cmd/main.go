@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ElsaDevOps/Observability-EKS/internal/config"
 	"github.com/ElsaDevOps/Observability-EKS/internal/metrics"
 	"github.com/ElsaDevOps/Observability-EKS/internal/provider"
 	"github.com/prometheus/client_golang/prometheus"
@@ -41,15 +42,19 @@ func startTickerLoop(gauge *prometheus.GaugeVec, latencyGauge *prometheus.GaugeV
 }
 
 func main() {
+	cfg, err := config.LoadConfig("config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Loaded %d providers, interval: %s", len(cfg.Providers), cfg.Interval)
+
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
-	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
-
-	h := provider.NewHeadscale("https://example.com/api/v1/node", "api-key")
+	h := provider.NewHeadscale(cfg.Providers[0].URL, cfg.Providers[0].APIKey)
 	providers := []provider.Provider{h}
 
-	go startTickerLoop(m.ApiUp, m.LatencyGauge, providers, 30*time.Second)
+	go startTickerLoop(m.ApiUp, m.LatencyGauge, providers, cfg.Interval)
 
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
 	log.Println("Starting server on :8080")
