@@ -6,10 +6,15 @@ import (
 )
 
 type Node struct {
-	ID      string
-	Name    string
-	Healthy bool
+    Name     string `json:"name"`
+    Online   bool `json:"online"`
+    LastSeen time.Time `json:"last_seen"`
 }
+
+type listNodesResponse struct {
+    Nodes []Node `json:"nodes"`
+}
+
 
 type Provider interface {
 	Name() string

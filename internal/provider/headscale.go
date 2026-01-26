@@ -2,7 +2,9 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
@@ -13,7 +15,36 @@ type Headscale struct {
 }
 
 func (h *Headscale) ListNodes(ctx context.Context) ([]Node, error) {
-	return nil, nil
+	req, err := http.NewRequestWithContext(ctx, "GET", h.url+"/api/v1/node", nil)
+	if err != nil {
+
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+h.apikey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Expected 200, got: %s ", resp.Status)
+	}
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response listNodesResponse
+	err = json.Unmarshal(data, &response)
+	if err != nil {
+		return nil, err
+	}
+	return response.Nodes, nil
 }
 
 func (h *Headscale) Name() string {
@@ -27,20 +58,19 @@ func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 		fmt.Println("Error creating request:", err)
 		return false, 0, err
 	}
-	req.Header.Set("Authorization", "Bearer"+h.apikey)
+	req.Header.Set("Authorization", "Bearer "+h.apikey)
 
 	start := time.Now()
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Request error:", err)
+
 		return false, 0, err
 	}
 	defer resp.Body.Close()
 
 	elapsed := time.Since(start)
-	fmt.Println("Response status:", resp.Status)
 
 	return resp.StatusCode == 200, elapsed, nil
 
