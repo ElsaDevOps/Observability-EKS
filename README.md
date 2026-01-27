@@ -34,6 +34,7 @@ Mine uses Alpine only in the build stage. The final runtime image is scratch. No
 
 
 **The Platform:**
+
 6. Deploys to EKS via ArgoCD (GitOps)
 7. Gateway API routes external traffic
 8. CertManager handles TLS certificates via Let's Encrypt
