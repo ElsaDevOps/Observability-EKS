@@ -17,7 +17,6 @@ type Headscale struct {
 func (h *Headscale) ListNodes(ctx context.Context) ([]Node, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", h.url+"/api/v1/node", nil)
 	if err != nil {
-
 		return nil, err
 	}
 	req.Header.Set("Authorization", "Bearer "+h.apikey)

@@ -32,6 +32,7 @@ Mine uses Alpine only in the build stage. The final runtime image is scratch. No
 4. Updates Prometheus metrics with results
 5. Exposes `/metrics` endpoint for Prometheus to scrape
 
+
 **The Platform:**
 6. Deploys to EKS via ArgoCD (GitOps)
 7. Gateway API routes external traffic
