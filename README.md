@@ -117,8 +117,6 @@ docker build -t headscale-exporter .
 
 | Component | Status |
 |-----------|--------|
-| Node metrics (online count, last seen) | Next |
-| Tailscale provider | Planned |
 | Kubernetes manifests | Planned |
 | Kustomize overlays (dev/prod) | Planned |
 | EKS cluster (Terraform) | Planned |
