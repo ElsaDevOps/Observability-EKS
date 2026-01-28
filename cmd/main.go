@@ -13,7 +13,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func startTickerLoop(gauge *prometheus.GaugeVec, latencyGauge *prometheus.GaugeVec, providers []provider.Provider, interval time.Duration) {
+func startTickerLoop(m *metrics.Metrics, providers []provider.Provider, interval time.Duration) {
 	ticker := time.NewTicker(interval)
 	for range ticker.C {
 		for _, p := range providers {
@@ -28,15 +28,37 @@ func startTickerLoop(gauge *prometheus.GaugeVec, latencyGauge *prometheus.GaugeV
 				value = 0.0
 			}
 
-			gauge.With(prometheus.Labels{"provider": p.Name()}).Set(value)
+			m.APIUp.With(prometheus.Labels{"provider": p.Name()}).Set(value)
 
 			if err == nil {
-				latencyGauge.With(prometheus.Labels{"provider": p.Name()}).Set(latency.Seconds())
+				m.LatencyGauge.With(prometheus.Labels{"provider": p.Name()}).Set(latency.Seconds())
 			}
 
 			if err != nil {
 				log.Printf("Error for provider %s: %s", p.Name(), err)
+				continue
 			}
+
+			ctx2, cancel2 := context.WithTimeout(context.Background(), 2*time.Second)
+			nodes, err := p.ListNodes(ctx2)
+			cancel2()
+
+			if err != nil {
+				log.Printf("Error for provider %s: %s", p.Name(), err)
+			}
+
+			for _, node := range nodes {
+				var value float64
+				if node.Online {
+					value = 1.0
+				} else {
+					value = 0.0
+				}
+
+				m.Online.With(prometheus.Labels{"provider": p.Name(), "node": node.Name}).Set(value)
+				m.LastSeen.With(prometheus.Labels{"provider": p.Name(), "node": node.Name}).Set(float64(node.LastSeen.Unix()))
+			}
+
 		}
 	}
 }
@@ -51,12 +73,24 @@ func main() {
 	reg := prometheus.NewRegistry()
 	m := metrics.NewMetrics(reg)
 
-	h := provider.NewHeadscale(cfg.Providers[0].URL, cfg.Providers[0].APIKey)
-	providers := []provider.Provider{h}
+	var providers []provider.Provider
 
-	go startTickerLoop(m.ApiUp, m.LatencyGauge, providers, cfg.Interval)
+	for _, p := range cfg.Providers {
+		switch p.Name {
+		case "headscale":
+			h := provider.NewHeadscale(p.URL, p.APIKey)
+			providers = append(providers, h)
+		case "tailscale":
+			t := provider.NewTailscale(p.TailnetID, p.APIKey)
+			providers = append(providers, t)
+		default:
+			log.Printf("unknown provider: %s", p.Name)
+		}
+	}
+
+	go startTickerLoop(m, providers, cfg.Interval)
 
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{Registry: reg}))
-	log.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Println("Starting server on :8081")
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }

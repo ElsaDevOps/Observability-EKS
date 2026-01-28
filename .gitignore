@@ -3,3 +3,5 @@
 *.exe
 .vscode/
 *.out
+config.yaml
+headscale-config.yaml

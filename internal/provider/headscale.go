@@ -52,9 +52,8 @@ func (h *Headscale) Name() string {
 
 func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 
-	req, err := http.NewRequestWithContext(ctx, "GET", h.url, nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", h.url+"/api/v1/apikey", nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return false, 0, err
 	}
 	req.Header.Set("Authorization", "Bearer "+h.apikey)

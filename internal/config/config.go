@@ -8,9 +8,10 @@ import (
 )
 
 type ProviderConfig struct {
-	Name   string `yaml:"name"`
-	URL    string `yaml:"url"`
-	APIKey string `yaml:"api_key"`
+	Name      string `yaml:"name"`
+	URL       string `yaml:"url"`
+	APIKey    string `yaml:"api_key"`
+	TailnetID string `yaml:"tailnet_id"`
 }
 
 type Config struct {
