@@ -24,6 +24,5 @@ func LoadConfig(path string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &cfg, nil
 }

@@ -30,7 +30,6 @@ func NewTailscale(cfg ProviderConfig) Provider {
 	if cfg.URL != "" {
 		url = cfg.URL
 	}
-
 	return &Tailscale{TailnetID: cfg.TailnetID, APIKey: cfg.APIKey, URL: url}
 }
 
@@ -39,7 +38,6 @@ func (t *Tailscale) Name() string {
 }
 
 func (t *Tailscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
-
 	req, err := http.NewRequestWithContext(ctx, "GET", t.URL, nil)
 	if err != nil {
 		return false, 0, err
@@ -59,11 +57,9 @@ func (t *Tailscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 	elapsed := time.Since(start)
 
 	return resp.StatusCode == 200, elapsed, nil
-
 }
 
 func (t *Tailscale) ListNodes(ctx context.Context) ([]Node, error) {
-
 	req, err := http.NewRequestWithContext(ctx, "GET", t.URL, nil)
 	if err != nil {
 		return nil, err
@@ -102,7 +98,6 @@ func (t *Tailscale) ListNodes(ctx context.Context) ([]Node, error) {
 		})
 	}
 	return nodes, nil
-
 }
 
 func init() {

@@ -86,10 +86,8 @@ func TestListNodes_Success(t *testing.T) {
     {"name": "node1", "online": true, "last_seen": "2024-01-01T00:00:00Z"},
     {"name": "node2", "online": false, "last_seen": "2024-01-01T00:00:00Z"},
 	{"name": "node3", "online": false, "last_seen": "2024-01-01T00:00:00Z"}
-
-  ]
+]
 }`))
-
 	})
 	server := httptest.NewServer(handler)
 	defer server.Close()
@@ -106,13 +104,11 @@ func TestListNodes_Success(t *testing.T) {
 	if len(nodes) != 3 {
 		t.Errorf("got node length=%v, want 3", len(nodes))
 	}
-
 }
 
 func TestListNodes_500(t *testing.T) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-
 	})
 	server := httptest.NewServer(handler)
 	defer server.Close()
@@ -130,7 +126,6 @@ func TestListNodes_500(t *testing.T) {
 	if nodes != nil {
 		t.Errorf("got nodes=%v, want 0", nodes)
 	}
-
 }
 
 func TestListNodes_BadJSON(t *testing.T) {
@@ -155,5 +150,4 @@ func TestListNodes_BadJSON(t *testing.T) {
 	if nodes != nil {
 		t.Errorf("got nodes=%v, want 0", nodes)
 	}
-
 }

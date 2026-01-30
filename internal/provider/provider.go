@@ -24,10 +24,10 @@ type Provider interface {
 }
 
 type ProviderConfig struct {
-	Name      string `yaml:"name"`
-	URL       string `yaml:"url"`
-	APIKey    string `yaml:"api_key"`
-	TailnetID string `yaml:"tailnet_id"`
+	Name      string        `yaml:"name"`
+	URL       string        `yaml:"url"`
+	APIKey    string        `yaml:"api_key"`
+	TailnetID string        `yaml:"tailnet_id"`
 	Interval  time.Duration // optional, overrides DefaultInterval
-	Features map[string]string
+	Features  map[string]string
 }

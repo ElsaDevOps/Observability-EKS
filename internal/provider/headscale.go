@@ -71,7 +71,6 @@ func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 	elapsed := time.Since(start)
 
 	return resp.StatusCode == 200, elapsed, nil
-
 }
 
 func NewHeadscale(cfg ProviderConfig) Provider {
