@@ -25,8 +25,13 @@ type Tailscale struct {
 	URL       string
 }
 
-func NewTailscale(TailnetID, APIKey string) *Tailscale {
-	return &Tailscale{TailnetID: TailnetID, APIKey: APIKey, URL: "https://api.tailscale.com"}
+func NewTailscale(cfg ProviderConfig) Provider {
+	url := "https://api.tailscale.com"
+	if cfg.URL != "" {
+		url = cfg.URL
+	}
+
+	return &Tailscale{TailnetID: cfg.TailnetID, APIKey: cfg.APIKey, URL: url}
 }
 
 func (t *Tailscale) Name() string {
@@ -98,4 +103,8 @@ func (t *Tailscale) ListNodes(ctx context.Context) ([]Node, error) {
 	}
 	return nodes, nil
 
+}
+
+func init() {
+	Register("tailscale", NewTailscale)
 }

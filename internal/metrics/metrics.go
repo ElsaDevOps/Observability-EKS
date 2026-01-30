@@ -5,20 +5,23 @@ import (
 )
 
 type Metrics struct {
-	APIUp        *prometheus.GaugeVec
-	LatencyGauge *prometheus.GaugeVec
-	Online       *prometheus.GaugeVec
-	LastSeen     *prometheus.GaugeVec
+	// API health metrics
+	APIChecks *prometheus.CounterVec
+	Latency   *prometheus.GaugeVec
+
+	// Node status metrics
+	Online   *prometheus.GaugeVec
+	LastSeen *prometheus.GaugeVec
 }
 
 func NewMetrics(reg prometheus.Registerer) *Metrics {
 	m := &Metrics{
-		APIUp: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Name: "api_up_info",
-			Help: "Checks API health.",
-		}, []string{"provider"}),
+		APIChecks: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Name: "api_checks_total",
+			Help: "Toyal number of API health checks perfomed.",
+		}, []string{"provider", "status"}), //status tells you whether each check succeeded or failed
 
-		LatencyGauge: prometheus.NewGaugeVec(prometheus.GaugeOpts{
+		Latency: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "api_latency_seconds",
 			Help: "The value of the latency for the API request.",
 		}, []string{"provider"}),
@@ -34,6 +37,6 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		}, []string{"provider", "node"}),
 	}
 
-	reg.MustRegister(m.APIUp, m.LatencyGauge, m.LastSeen, m.Online)
+	reg.MustRegister(m.APIChecks, m.Latency, m.LastSeen, m.Online)
 	return m
 }

@@ -74,6 +74,10 @@ func (h *Headscale) CheckAPI(ctx context.Context) (bool, time.Duration, error) {
 
 }
 
-func NewHeadscale(url, apikey string) *Headscale {
-	return &Headscale{url: url, apikey: apikey}
+func NewHeadscale(cfg ProviderConfig) Provider {
+	return &Headscale{url: cfg.URL, apikey: cfg.APIKey}
+}
+
+func init() {
+	Register("headscale", NewHeadscale)
 }

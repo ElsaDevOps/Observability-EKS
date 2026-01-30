@@ -4,19 +4,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/ElsaDevOps/Observability-EKS/internal/provider"
 	"gopkg.in/yaml.v2"
 )
 
-type ProviderConfig struct {
-	Name      string `yaml:"name"`
-	URL       string `yaml:"url"`
-	APIKey    string `yaml:"api_key"`
-	TailnetID string `yaml:"tailnet_id"`
-}
-
 type Config struct {
-	Providers []ProviderConfig `yaml:"providers"`
-	Interval  time.Duration    `yaml:"interval"`
+	DefaultInterval time.Duration             `yaml:"default_interval"`
+	Providers       []provider.ProviderConfig `yaml:"providers"`
 }
 
 func LoadConfig(path string) (*Config, error) {
