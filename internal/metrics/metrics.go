@@ -19,7 +19,7 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 		APIChecks: prometheus.NewCounterVec(prometheus.CounterOpts{
 			Name: "api_checks_total",
 			Help: "Toyal number of API health checks perfomed.",
-		}, []string{"provider", "status"}), //status tells you whether each check succeeded or failed
+		}, []string{"provider", "status"}), // status tells you whether each check succeeded or failed
 
 		Latency: prometheus.NewGaugeVec(prometheus.GaugeOpts{
 			Name: "api_latency_seconds",
@@ -36,7 +36,6 @@ func NewMetrics(reg prometheus.Registerer) *Metrics {
 			Help: "The timestamp for when the node was last online",
 		}, []string{"provider", "node"}),
 	}
-
 	reg.MustRegister(m.APIChecks, m.Latency, m.LastSeen, m.Online)
 	return m
 }

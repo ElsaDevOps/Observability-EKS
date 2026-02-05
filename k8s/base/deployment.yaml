@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exporter-deployment
+  labels:
+    app: exporter
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: exporter
+  template:
+    metadata:
+      labels:
+        app: exporter
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+      containers:
+      - name: exporter
+        image: <account-id>.dkr.ecr.<region>.amazonaws.com/ts-health-exporter:latest
+        args: ["--config=/config/config.yaml"]
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: exporter-secrets
+        securityContext:
+          readOnlyRootFilesystem: true
+        resources:
+          requests:
+            memory: "32Mi"
+            cpu: "10m"
+          limits:
+            memory: "64Mi"
+            cpu: "100m"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: exporter-config

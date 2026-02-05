@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exporter-config
+data:
+  config.yaml: |
+    providers:
+      - name: headscale
+        url: http://localhost:8080
+        
+      - name: tailscale
+        url: https://api.tailscale.com
+        tailnet_id: "foobar"
+
+    default_interval: 30s
