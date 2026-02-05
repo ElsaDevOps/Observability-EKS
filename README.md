@@ -126,7 +126,7 @@ docker build -t headscale-exporter .
 | ArgoCD GitOps | Planned |
 | Prometheus and Grafana | Planned |
 | Grafana dashboard JSON | Planned |
-| Graceful shutdown | Nice to have |
+| Graceful shutdown | Implemented |
 
 ## Challenges and Learnings
 
