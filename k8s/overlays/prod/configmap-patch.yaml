@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exporter-config
+data:
+  config.yaml: |
+    providers:
+      - name: headscale
+        url: http://headscale.example.com
+        
+      - name: tailscale
+        url: https://api.tailscale.com
+        tailnet_id: "my-tailnet-id"
+
+    default_interval: 30s
