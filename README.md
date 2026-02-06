@@ -117,7 +117,7 @@ docker build -t headscale-exporter .
 
 | Component | Status |
 |-----------|--------|
-| Kubernetes manifests | Planned |
+| Kubernetes manifests | Implemented |
 | Kustomize overlays (dev/prod) | Planned |
 | EKS cluster (Terraform) | Planned |
 | Gateway API routing | Planned |
