@@ -2,3 +2,13 @@
 README.md
 config.yaml
 .git/
+.dockerignore
+.env
+.pre-commit-config.yaml
+infrastructure/
+.terraform/
+*.tfstate
+*.tfstate.*
+.github/
+
+EOF
