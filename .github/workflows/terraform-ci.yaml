@@ -1,0 +1,47 @@
+name: Elsa's Terraform Quality Checker
+
+
+permissions:
+  contents: read
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+   validate:
+    name: Validate and Lint Terraform
+    runs-on: ubuntu-latest
+    permissions:
+        id-token: write
+        contents: read
+
+    steps:
+           - name: checkout code
+             uses: actions/checkout@v6
+
+           - name: Download Terraform CLI
+             uses: hashicorp/setup-terraform@v3
+             with:
+              terraform_version: latest
+
+
+           - name: Terraform Init
+             run: terraform init -backend=false
+
+           - name: Terraform Format
+             run: terraform fmt -check -recursive
+
+           - name: Terraform Validate
+             run: terraform validate
+
+           - name: Setup TFLint
+             uses: terraform-linters/setup-tflint@v6
+             with:
+              tflint_version: latest
+
+           - name: Run TFLint
+             run: tflint --recursive --format=compact
