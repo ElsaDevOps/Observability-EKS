@@ -29,18 +29,18 @@ resource "aws_subnet" "public_subnet" {
   availability_zone       = each.key
   map_public_ip_on_launch = true
 
- tags = merge(
-  {
-    Name        = "${var.project_name}-public-subnet"
-    Project     = var.project_name
-    Environment = "dev"
-    ManagedBy   = "Terraform"
-  },
-  var.public_subnet_tags
-)
+  tags = merge(
+    {
+      Name        = "${var.project_name}-public-subnet"
+      Project     = var.project_name
+      Environment = "dev"
+      ManagedBy   = "Terraform"
+    },
+    var.public_subnet_tags
+  )
 
 }
-  
+
 # Private subnets for EKS - access via NAT gateway
 resource "aws_subnet" "private_subnet_app" {
   for_each                = { for i, availability_zone in var.availability_zones : availability_zone => var.cidr_private_subnet_app[i] }
@@ -49,14 +49,14 @@ resource "aws_subnet" "private_subnet_app" {
   availability_zone       = each.key
   map_public_ip_on_launch = false
 
-  tags = merge (
+  tags = merge(
     {
-    Name        = "${var.project_name}-private-subnet-app"
-    Project     = var.project_name
-    Environment = "dev"
-    ManagedBy   = "Terraform"
-  },
-  var.private_subnet_tags
+      Name        = "${var.project_name}-private-subnet-app"
+      Project     = var.project_name
+      Environment = "dev"
+      ManagedBy   = "Terraform"
+    },
+    var.private_subnet_tags
   )
 }
 
