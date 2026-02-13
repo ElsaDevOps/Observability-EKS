@@ -14,14 +14,13 @@ resource "aws_eks_cluster" "main" {
     endpoint_private_access = true
     endpoint_public_access  = true
 
-    subnet_ids = [
-      var.subnet_ids.id
-    ]
+    subnet_ids = var.subnet_ids
+
   }
 
   encryption_config {
     provider {
-      key_arn = aws_kms_key.example
+      key_arn = aws_kms_key.my_key.arn
     }
     resources = ["secrets"]
   }
@@ -34,22 +33,36 @@ resource "aws_eks_cluster" "main" {
     "scheduler"
   ]
 
-
-  # Ensure that IAM Role permissions are created before and deleted
-  # after EKS Cluster handling. Otherwise, EKS will not be able to
-  # properly delete EKS managed EC2 infrastructure such as Security Groups.
-  depends_on = [
-    aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSComputePolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSBlockStoragePolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSLoadBalancingPolicy,
-    aws_iam_role_policy_attachment.cluster_AmazonEKSNetworkingPolicy,
-  ]
+  depends_on = [ aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy, ]
 }
 
-resource "aws_kms_key" "example" {
-  # checkov:skip=CKV2_AWS_64
-  description             = "An example symmetric encryption KMS key"
+resource "aws_kms_key" "my_key" {
+  # checkov:skip=CKV2_AWS_64: Default key policy grants root account access, IAM policies control usage
+  description             = "A symmetric encryption KMS key"
   enable_key_rotation     = true
   deletion_window_in_days = 20
+}
+
+resource "aws_iam_role" "cluster" {
+  name = "${var.cluster_name}-cluster-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.cluster.name
 }
