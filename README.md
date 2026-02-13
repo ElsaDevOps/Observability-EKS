@@ -118,8 +118,8 @@ docker build -t headscale-exporter .
 | Component | Status |
 |-----------|--------|
 | Kubernetes manifests | Implemented |
-| Kustomize overlays (dev/prod) | Planned |
-| EKS cluster (Terraform) | Planned |
+| Kustomize overlays (dev/prod) | Implemented |
+| EKS cluster (Terraform) | In Progress |
 | Gateway API routing | Planned |
 | CertManager and TLS | Planned |
 | ExternalDNS | Planned |
@@ -138,4 +138,3 @@ docker build -t headscale-exporter .
 ## Questions or Issues?
 
 Open an issue or reach out on [LinkedIn](www.linkedin.com/in/elsadevops).
-
