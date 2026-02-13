@@ -8,8 +8,8 @@ output "vpc_cidr_block" {
   value       = aws_vpc.my_vpc.cidr_block
 }
 
-output "private_subnet_id_app" {
-  description = "Map of private app tier subnet IDs, keyed by AZ's"
+output "private_subnet_id" {
+  description = "Map of private subnet IDs, keyed by AZ's"
   value = {
     for az, subnet in aws_subnet.private_subnet_app : az => subnet.id
   }

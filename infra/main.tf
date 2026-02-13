@@ -18,3 +18,14 @@ module "vpc" {
   }
 
 }
+
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_name        = local.cluster_name
+  subnet_ids          = module.vpc.private_subnet_id
+  node_instance_types = var.node_instance_types
+  node_desired_size   = var.node_desired_size
+  node_min_size       = var.node_min_size
+  node_max_size       = var.node_max_size
+}

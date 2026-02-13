@@ -28,4 +28,27 @@ variable "cidr_public_subnet_web" {
   default     = ["10.0.0.0/24", "10.0.1.0/24"]
 }
 
+variable "node_instance_types" {
+  type        = list(string)
+  description = "The instance type of the node group"
+  default     = ["t3.medium"]
+}
 
+variable "node_desired_size" {
+  type        = number
+  description = "The desired size of the node group"
+  default     = 1
+}
+
+variable "node_min_size" {
+  type        = number
+  description = "The minimum size of the node group"
+  default     = 1
+
+}
+
+variable "node_max_size" {
+  type        = number
+  description = "The maxiumum size of the node group"
+  default     = 2
+}
