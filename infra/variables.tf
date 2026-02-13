@@ -52,3 +52,8 @@ variable "node_max_size" {
   description = "The maxiumum size of the node group"
   default     = 2
 }
+
+variable "environment" {
+  type        = string
+  description = "Environment name (dev, prod)"
+}

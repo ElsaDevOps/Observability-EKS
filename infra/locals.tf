@@ -1,5 +1,5 @@
 locals {
-  cluster_name = "exporter-cluster"
+  cluster_name = "exporter-cluster-${var.environment}"
 
   network_config = {
     cidr_vpc                = var.cidr_blockvpc
