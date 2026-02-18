@@ -29,3 +29,14 @@ module "eks" {
   node_min_size       = var.node_min_size
   node_max_size       = var.node_max_size
 }
+
+module "aws_lb_controller_irsa" {
+  source = "./modules/security"
+
+  namespace            = "kube-system"
+  service_account_name = "aws-load-balancer-controller"
+  policy_json          = file("${path.module}/policies/aws-lb-controller.json")
+  oidc_arn             = module.eks.oidc_provider_arn
+  issuer_url           = module.eks.oidc_issuer_url
+  role_name            = "lb-controller-irsa"
+}
