@@ -40,3 +40,14 @@ module "aws_lb_controller_irsa" {
   issuer_url           = module.eks.oidc_issuer_url
   role_name            = "lb-controller-irsa"
 }
+
+module "cert_manager" {
+  source = "./modules/security"
+
+  namespace            = "cert-manager"
+  service_account_name = "cert-manager"
+  policy_json          = file("${path.module}/policies/cert-manager.json")
+  oidc_arn             = module.eks.oidc_provider_arn
+  issuer_url           = module.eks.oidc_issuer_url
+  role_name            = "cert-manager-irsa"
+}
