@@ -51,3 +51,14 @@ module "cert_manager" {
   issuer_url           = module.eks.oidc_issuer_url
   role_name            = "cert-manager-irsa"
 }
+
+module "external_dns" {
+  source = "./modules/security"
+
+  namespace            = "external-dns"
+  service_account_name = "external-dns"
+  policy_json          = file("${path.module}/policies/external-dns.json")
+  oidc_arn             = module.eks.oidc_provider_arn
+  issuer_url           = module.eks.oidc_issuer_url
+  role_name            = "external-dns-irsa"
+}
