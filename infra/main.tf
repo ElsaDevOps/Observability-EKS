@@ -90,7 +90,7 @@ resource "aws_ssm_parameter" "vpc_id" {
   name   = "/${var.environment}/platform/vpc-id"
   type   = "SecureString"
   value  = module.vpc.vpc_id
-  key_id = aws_kms_key.ssm.id
+  key_id = aws_kms_key.encryption_key.id
 }
 
 resource "aws_kms_key" "encryption_key" {
