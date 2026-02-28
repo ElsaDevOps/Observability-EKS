@@ -66,7 +66,7 @@ module "external_dns" {
 resource "aws_ssm_parameter" "lb_controller_role_arn" {
   name   = "/${var.environment}/platform/lb-controller-role-arn"
   type   = "SecureString"
-  value  = module.lb_controller.role_arn
+  value  = module.laws_lb_controller_irsa.role_arn
   key_id = aws_kms_key.encryption_key.arn
 }
 
