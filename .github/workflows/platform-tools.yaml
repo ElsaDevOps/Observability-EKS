@@ -48,7 +48,8 @@ jobs:
 
       - name: Add EKS Helm repo
         run: helm repo add eks https://aws.github.io/eks-charts && helm repo update
-
+      - name: Clean stuck LB Controller release
+        run: helm uninstall aws-load-balancer-controller -n kube-system --ignore-not-found
       - name: Install AWS Load Balancer Controller
         run: |
           helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
