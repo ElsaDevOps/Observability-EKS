@@ -1,6 +1,7 @@
 resources:
 - ../../base
 namePrefix: dev-
+namespace: health-exporter
 patches:
   - path: deployment-patch.yaml
   - path: configmap-patch.yaml

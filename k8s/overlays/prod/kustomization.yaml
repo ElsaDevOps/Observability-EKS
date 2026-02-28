@@ -1,5 +1,5 @@
 resources:
 - ../../base
-
+namespace: health-exporter
 patches:
   - path: configmap-patch.yaml
