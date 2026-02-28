@@ -82,7 +82,7 @@ jobs:
             --wait
 
       - name: Apply ClusterIssuer
-        run: envsubst < infra/platform/cluster-issuer.yaml | kubectl apply -f -
+        run: envsubst < infra/platform/C:\Users\Hinat\Observability-EKS\infra\platform\clusterissuer-lets-encrypt-staging.yaml | kubectl apply -f -
 
       - name: Add ExternalDNS Helm repo
         run: helm repo add external-dns https://kubernetes-sigs.github.io/external-dns && helm repo update
