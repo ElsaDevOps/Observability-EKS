@@ -86,6 +86,13 @@ resource "aws_ssm_parameter" "cert_manager_role_arn" {
   key_id = aws_kms_key.encryption_key.arn
 }
 
+resource "aws_ssm_parameter" "vpc_id" {
+  name   = "/${var.environment}/platform/vpc-id"
+  type   = "SecureString"
+  value  = module.vpc.vpc_id
+  key_id = aws_kms_key.ssm.id
+}
+
 resource "aws_kms_key" "encryption_key" {
   # checkov:skip=CKV2_AWS_64: Default key policy grants root account access, IAM policies control usage
   description             = "A symmetric encryption KMS key"

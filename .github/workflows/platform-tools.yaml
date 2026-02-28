@@ -35,12 +35,13 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Fetch IRSA role ARNs and email
+      - name: Fetch IRSA role ARNs, email and VPC ID
         run: |
           echo "LB_ROLE_ARN=$(aws ssm get-parameter --name /${{ github.event.inputs.environment }}/platform/lb-controller-role-arn --with-decryption --query Parameter.Value --output text)" >> $GITHUB_ENV
           echo "CERT_MANAGER_ROLE_ARN=$(aws ssm get-parameter --name /${{ github.event.inputs.environment }}/platform/cert-manager-role-arn --with-decryption --query Parameter.Value --output text)" >> $GITHUB_ENV
           echo "EXTERNAL_DNS_ROLE_ARN=$(aws ssm get-parameter --name /${{ github.event.inputs.environment }}/platform/external-dns-role-arn --with-decryption --query Parameter.Value --output text)" >> $GITHUB_ENV
           echo "EMAIL_ADDRESS=${{ vars.EMAIL_ADDRESS }}" >> $GITHUB_ENV
+                    echo "VPC_ID=$(aws ssm get-parameter --name /${{ github.event.inputs.environment }}/platform/vpc-id --with-decryption --query Parameter.Value --output text)" >> $GITHUB_ENV
 
       - name: Install Gateway API CRDs
         run: kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
@@ -54,6 +55,7 @@ jobs:
             --namespace kube-system \
             --set clusterName=${{ env.CLUSTER_NAME }} \
             --set serviceAccount.create=true \
+            --set vpcId=${{ env.VPC_ID }} \
             --set serviceAccount.name=aws-load-balancer-controller \
             --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${{ env.LB_ROLE_ARN }} \
             --wait
