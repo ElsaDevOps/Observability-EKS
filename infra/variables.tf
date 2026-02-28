@@ -57,3 +57,8 @@ variable "environment" {
   type        = string
   description = "Environment name (dev, prod)"
 }
+
+variable "gha_role_arn" {
+  type        = string
+  description = "The arn of the github actions role"
+}

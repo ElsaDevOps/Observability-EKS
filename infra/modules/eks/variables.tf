@@ -32,3 +32,8 @@ variable "node_max_size" {
   description = "The maxiumum size of the node group"
   default     = 2
 }
+
+variable "gha_role_arn" {
+  type        = string
+  description = "The arn of the github actions role"
+}

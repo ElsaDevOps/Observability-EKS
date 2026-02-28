@@ -29,6 +29,7 @@ module "eks" {
   node_desired_size   = var.node_desired_size
   node_min_size       = var.node_min_size
   node_max_size       = var.node_max_size
+  gha_role_arn        = var.gha_role_arn
 }
 
 module "aws_lb_controller_irsa" {

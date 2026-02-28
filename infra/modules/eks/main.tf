@@ -137,3 +137,19 @@ resource "aws_eks_node_group" "main" {
 
   ]
 }
+
+resource "aws_eks_access_entry" "gha" {
+  cluster_name  = aws_eks_cluster.main.name
+  principal_arn = var.gha_role_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "gha" {
+  cluster_name  = aws_eks_cluster.main.name
+  principal_arn = var.gha_role_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+}
