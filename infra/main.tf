@@ -62,3 +62,31 @@ module "external_dns" {
   issuer_url           = module.eks.oidc_issuer_url
   role_name            = "external-dns-irsa"
 }
+
+resource "aws_ssm_parameter" "lb_controller_role_arn" {
+  name   = "/${var.environment}/platform/lb-controller-role-arn"
+  type   = "SecureString"
+  value  = module.lb_controller_irsa.role_arn
+  key_id = aws_kms_key.encryption_key.arn
+}
+
+resource "aws_ssm_parameter" "external_dns_role_arn" {
+  name   = "/${var.environment}/platform/external-dns-role-arn"
+  type   = "SecureString"
+  value  = module.external_dns.role_arn
+  key_id = aws_kms_key.encryption_key.arn
+}
+
+resource "aws_ssm_parameter" "cert_manager_role_arn" {
+  name   = "/${var.environment}/platform/cert-manager-role-arn"
+  type   = "SecureString"
+  value  = module.cert_manager.role_arn
+  key_id = aws_kms_key.encryption_key.arn
+}
+
+resource "aws_kms_key" "encryption_key" {
+  # checkov:skip=CKV2_AWS_64: Default key policy grants root account access, IAM policies control usage
+  description             = "A symmetric encryption KMS key"
+  enable_key_rotation     = true
+  deletion_window_in_days = 20
+}
