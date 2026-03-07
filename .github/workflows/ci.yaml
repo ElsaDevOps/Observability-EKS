@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+      - 'images_gifs/**'
+      - '.gitignore'
+
+
+
+permissions:
+  id-token: write
+  contents: write
+
+env:
+  AWS_REGION: eu-west-2
+
+concurrency:
+  group: ci
+  cancel-in-progress: false
+
+jobs:
+  build-scan-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ github.sha }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::313196411727:role/git-role
+          aws-region: eu-west-2
+
+      - name: Amazon ECR "Login" Action for GitHub Actions
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+
+      - name: Set image reference
+        run: echo "IMAGE_REF=${{ steps.login-ecr.outputs.registry }}/my-exporter:${{ github.sha }}" >> "$GITHUB_ENV"
+
+      - name: Check if image exists
+        id: check-image
+        run: |
+         if aws ecr describe-images --repository-name my-exporter --image-ids imageTag=${{ github.sha }} 2>/dev/null; then
+         echo "exists=true" >> $GITHUB_OUTPUT
+         else
+         echo "exists=false" >> $GITHUB_OUTPUT
+         fi
+      - name: Build Summary
+        run: |
+          echo "## Build Summary 🐳" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Item | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Image** | \`$IMAGE_REF\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Tag** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check-image.outputs.exists }}" = "true" ]; then
+            echo "| **Status** | ⏭️ Skipped (image exists) |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| **Status** | ✅ Built and pushed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Build image
+        if: steps.check-image.outputs.exists == 'false'
+        run: docker build -t "$IMAGE_REF" .
+
+
+      - name: Trivy scan
+        if: steps.check-image.outputs.exists == 'false'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_REF }}
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push to ECR
+        if: steps.check-image.outputs.exists == 'false'
+        run: docker push "$IMAGE_REF"
+
+      - name: Update kustomize overlay with new tag
+        if: steps.check-image.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cd k8s/overlays/dev
+          kustomize edit set image kustomize edit set image 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter=313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:${GITHUB_SHA}
+          git add .
+          git commit -m "ci: update image tag to ${GITHUB_SHA} [skip ci]"
+          git push
+
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/
+
+      - name: Checkov Summary
+        if: always()
+        run: |
+          echo "## Checkov Scan 🔒" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Infrastructure as Code security scan completed." >> $GITHUB_STEP_SUMMARY

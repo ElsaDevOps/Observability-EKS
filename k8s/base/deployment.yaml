@@ -19,7 +19,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: exporter
-        image: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/ts-health-exporter:latest
+        image: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:latest
         args: ["--config=/config/config.yaml"]
         ports:
         - containerPort: 8080
