@@ -1,0 +1,80 @@
+# checkov:skip=CKV_GHA_7:workflow_dispatch input is a safety control requiring explicit confirmation to destroy
+name: Destroy Infra
+
+permissions:
+  id-token: write
+  contents: read
+
+ # checkov:skip=CKV_GHA_7:Input is a confirmation gate for destroy workflow, not a build parameter
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm'
+        required: true
+        type: string
+      environment:
+        description: 'Environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  AWS_REGION: eu-west-2
+  CLUSTER_NAME: monitor-${{ github.event.inputs.environment }}
+
+concurrency:
+  group: cd
+  cancel-in-progress: false
+
+jobs:
+  terraform-destroy:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'destroy'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::313196411727:role/git-role
+          aws-region: eu-west-2
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Uninstall ArgoCD
+        run: helm uninstall argocd -n argocd --ignore-not-found
+
+      - name: Uninstall kube-prometheus-stack
+        run: helm uninstall prometheus -n monitoring --ignore-not-found
+
+      - name: Uninstall ExternalDNS
+        run: helm uninstall external-dns -n external-dns --ignore-not-found
+
+      - name: Delete ClusterIssuer
+        run: kubectl delete clusterissuer letsencrypt-staging --ignore-not-found
+
+      - name: Uninstall CertManager
+        run: helm uninstall cert-manager -n cert-manager --ignore-not-found
+
+      - name: Uninstall LB Controller
+        run: helm uninstall aws-load-balancer-controller -n kube-system --ignore-not-found
+
+      - name: Delete Gateway API CRDs
+        run: kubectl delete -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml --ignore-not-found
+
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: infra/
+        run: terraform init
+
+      - name: Terraform Destroy
+        working-directory: infra/
+        run: terraform destroy --auto-approve -var-file=environments/${{ github.event.inputs.environment }}.tfvars
