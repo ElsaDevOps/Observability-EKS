@@ -8,7 +8,7 @@ patches:
 images:
 - name: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter
   newName: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter
-  newTag: c1a2ee72c5e86b35a47ac5b092668eaea849c60d
+  newTag: 7a26a802295513e5e4284c02635d4eb22176999e
 - name: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:latest
   newTag: initial
 apiVersion: kustomize.config.k8s.io/v1beta1
