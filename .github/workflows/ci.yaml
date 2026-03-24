@@ -89,7 +89,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           cd k8s/overlays/dev
-          kustomize edit set image kustomize edit set image 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter=313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:${GITHUB_SHA}
+          kustomize edit set image 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter=313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:${GITHUB_SHA}
           git add .
           git commit -m "ci: update image tag to ${GITHUB_SHA} [skip ci]"
           git push
