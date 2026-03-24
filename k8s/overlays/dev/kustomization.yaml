@@ -3,8 +3,13 @@ resources:
 namePrefix: dev-
 namespace: health-exporter
 patches:
-  - path: deployment-patch.yaml
-  - path: configmap-patch.yaml
+- path: deployment-patch.yaml
+- path: configmap-patch.yaml
 images:
+- name: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter
+  newName: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter
+  newTag: 59c44175cebf5ff59dc1129fee6c041420b052f6
 - name: 313196411727.dkr.ecr.eu-west-2.amazonaws.com/my-exporter:latest
   newTag: initial
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
