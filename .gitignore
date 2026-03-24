@@ -5,7 +5,7 @@
 *.out
 config.yaml
 headscale-config.yaml
-.tfvars
+
 
 .env
 .DS_Store
@@ -25,8 +25,8 @@ crash.log
 crash.*.log
 
 
-*.tfvars
-*.tfvars.json
+
+
 
 
 override.tf
