@@ -45,6 +45,8 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+      - name: Delete ArgoCD Application
+        run: kubectl delete -f k8s/application.yaml --ignore-not-found
 
       - name: Uninstall ArgoCD
         run: helm uninstall argocd -n argocd --ignore-not-found
