@@ -101,4 +101,4 @@ jobs:
       - name: Terraform Apply
         working-directory: infra/
         run: |
-          terraform apply --auto-approve -var-file=environments/${ENVIRONMENT}.tfvars
+          terraform apply --auto-approve -var-file=infra/environments/${ENVIRONMENT}.tfvars
