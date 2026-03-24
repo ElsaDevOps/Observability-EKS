@@ -146,3 +146,9 @@ resource "aws_route_table_association" "private_app" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_route_table[each.key].id
 }
+
+
+# Stripped default security group for security hardening
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.my_vpc.id
+}
