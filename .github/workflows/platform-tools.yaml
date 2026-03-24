@@ -110,3 +110,6 @@ jobs:
             --namespace argocd \
             --create-namespace \
             --wait
+
+      - name: Deploy ArgoCD Application
+        run: kubectl apply -f k8s/application.yaml
