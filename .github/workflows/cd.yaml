@@ -59,7 +59,6 @@ jobs:
         with:
           name: tfplan
           path: |
-            ${{ env.TF_WORKING_DIR }}/.terraform/
             ${{ env.TF_WORKING_DIR }}/tfplan
 
       - name: Plan Summary
@@ -96,9 +95,9 @@ jobs:
         uses: actions/download-artifact@v7
         with:
            name: tfplan
-           path: .
+           path: infra/
 
       - name: Terraform Apply
         working-directory: infra/
         run: |
-          terraform apply --auto-approve -var-file=infra/environments/${ENVIRONMENT}.tfvars
+          terraform apply --auto-approve tfplan
