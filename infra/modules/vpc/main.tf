@@ -1,4 +1,5 @@
 resource "aws_vpc" "my_vpc" {
+  # checkov:skip=CKV2_AWS_11: Not needed for this project and incurs extra costs
   cidr_block           = var.cidr_blockvpc
   instance_tenancy     = "default"
   enable_dns_hostnames = true
@@ -17,7 +18,7 @@ resource "aws_subnet" "public_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = each.value
   availability_zone       = each.key
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = merge(
     {
