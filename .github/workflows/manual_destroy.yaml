@@ -23,7 +23,7 @@ on:
 
 env:
   AWS_REGION: eu-west-2
-  CLUSTER_NAME: monitor-${{ github.event.inputs.environment }}
+  CLUSTER_NAME: exporter-cluster-${{ github.event.inputs.environment }}
 
 concurrency:
   group: cd
